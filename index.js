@@ -38,21 +38,37 @@ function appendElement(element, id = "app-body"){
 
 // BASE URL FOR API
 const MEAL_API = "https://www.themealdb.com/api/json/v1/1/"
-const RADNOM_MEALS = `${MEAL_API}random.php`
+const RANDOM_MEALS = `${MEAL_API}random.php`
 const SEAFOOD = `${MEAL_API}filter.php?c=Seafood`
 
 
 // function to load random meal
 function loadRandomMeal(){
-
     //TODO: fill in the function
-
+    const mealsPromise = fetch(RANDOM_MEALS);
+    mealsPromise.then((response)=>{
+        return response.json();
+    }).then((body)=>{
+        const meal = body.meals[0];
+        const food = createFoodItem(meal.strMealThumb,meal.strMeal);
+        appendElement(food,'random-meal');
+    })
 }
 
 // function to load list of seafoods
 function loadSeafood(){
-
     // TODO: fill in the function
+    const seaFoodPromise = fetch(SEAFOOD);
+    seaFoodPromise.then((response)=>{
+        return response.json();
+    }).then((body)=>{
+        const list = body.meals;
+        for(let meal of list){
+            const food = createFoodItem(meal.strMealThumb,meal.strMeal);
+            appendElement(food,'food-list');
+        }
+        
+    })
 
 }
 
@@ -62,11 +78,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
     print(`Event loaded: ${event.type}`)
 
     // show random food
-
+    loadRandomMeal();
 
     // show list of sea food
-
+    loadSeafood()
 
     // BONUS: Add a button, add an event listener to it to reload the random image
-
+    const newButton = document.createElement('button');
+    newButton.innerText = "Random Meal";
+    appendElement(newButton,'random-meal');
+    newButton.addEventListener('click', ()=>{
+        document.querySelector('#random-meal').querySelector('div').remove();
+        loadRandomMeal(); 
+    });
 })
